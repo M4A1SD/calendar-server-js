@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WhatsApp Calendar Bot</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
+        input { padding: 8px; margin: 5px; width: 250px; }
+        button { padding: 8px 16px; cursor: pointer; }
+        #error-message { color: red; }
+        #result { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h2>WhatsApp Calendar Bot</h2>
+    <form id="oauth-form">
+        <input type="text" id="phone" placeholder="Phone number (e.g., +1234567890)"><br>
+        <input type="text" id="calendar-id" placeholder="Google Calendar ID (e.g., xxx@group.calendar.google.com)"><br>
+        <button type="submit">Start</button>
+    </form>
+    <div id="error-message"></div>
+    <div id="result"></div>
+
+    <script>
+        const CLIENT_ID = "511732170444-5av4o2isr0r1r3ktsr6kok5age35pnlb.apps.googleusercontent.com";
+        const SCOPE = "https://www.googleapis.com/auth/calendar.events";
+        const REDIRECT_URI = window.location.origin; // More precise redirect URI
+        const CALLBACK_URL = "https://8eaf-5-29-244-156.ngrok-free.app/callback";
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const form = document.getElementById("oauth-form");
+            const phoneInput = document.getElementById("phone");
+            const calendarIdInput = document.getElementById("calendar-id");
+            const errorMessage = document.getElementById("error-message");
+            const resultDiv = document.getElementById("result");
+
+            // Handle OAuth callback from redirect
+            const urlParams = new URLSearchParams(window.location.search);
+            const error = urlParams.get('error');
+            const hash = window.location.hash;
+            
+            if (error) {
+                errorMessage.textContent = `OAuth error: ${error}`;
+                console.error("OAuth error:", error);
+            } else if (hash) {
+                const params = new URLSearchParams(hash.substring(1));
+                const token = params.get("access_token");
+                const state = JSON.parse(decodeURIComponent(params.get("state") || "{}"));
+                if (token && state.phone && state.calendarId) {
+                    console.log("Token:", token);
+                    console.log("Phone:", state.phone);
+                    console.log("Calendar ID:", state.calendarId);
+                    fetch(CALLBACK_URL, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            phone: state.phone,
+                            calendar_id: state.calendarId,
+                            token: token
+                        })
+                    })
+                    .then(response => {
+                        if (!response.ok) throw new Error("Server error: " + response.status);
+                        return response.json();
+                    })
+                    .then(data => {
+                        resultDiv.textContent = "Success! Data sent to server.";
+                        console.log("Server response:", data);
+                    })
+                    .catch(error => {
+                        errorMessage.textContent = "Failed to send data: " + error.message;
+                        console.error("Fetch error:", error);
+                    });
+                } else {
+                    errorMessage.textContent = "OAuth callback failed: missing token or state.";
+                }
+            }
+
+            form.addEventListener("submit", (event) => {
+                event.preventDefault();
+                console.log("Redirect URI:", REDIRECT_URI);
+
+                const phone = phoneInput.value.trim();
+                const calendarId = calendarIdInput.value.trim();
+
+                if (!phone.startsWith("+") || phone.length < 10) {
+                    errorMessage.textContent = "Please enter a valid phone number with country code";
+                    return;
+                }
+                if (!calendarId || !calendarId.includes("@")) {
+                    errorMessage.textContent = "Please enter a valid Google Calendar ID";
+                    return;
+                }
+                errorMessage.textContent = "";
+
+                const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
+                    `client_id=${CLIENT_ID}&` +
+                    `redirect_uri=${encodeURIComponent(REDIRECT_URI)}&` +
+                    `response_type=token&` +
+                    `scope=${encodeURIComponent(SCOPE)}&` +
+                    `state=${encodeURIComponent(JSON.stringify({ phone, calendarId }))}`;
+                
+                console.log("Redirecting to:", authUrl);
+                window.location.href = authUrl;
+            });
+        });
+    </script>
+</body>
+</html>
