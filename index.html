@@ -43,44 +43,39 @@
 
             // Handle OAuth callback from redirect
             const urlParams = new URLSearchParams(window.location.search);
-            const error = urlParams.get('error');
-            const hash = window.location.hash;
-            
+            const code = urlParams.get("code");
+            const state = urlParams.get("state");
+            const error = urlParams.get("error");
+
             if (error) {
                 errorMessage.textContent = `OAuth error: ${error}`;
                 console.error("OAuth error:", error);
-            } else if (hash) {
-                const params = new URLSearchParams(hash.substring(1));
-                const token = params.get("access_token");
-                const state = JSON.parse(decodeURIComponent(params.get("state") || "{}"));
-                if (token && state.phone && state.calendarId) {
-                    console.log("Token:", token);
-                    console.log("Phone:", state.phone);
-                    console.log("Calendar ID:", state.calendarId);
-                    fetch(CALLBACK_URL, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            phone: state.phone,
-                            calendar_id: state.calendarId,
-                            token: token
-                        })
+            } else if (code && state) {
+                const { phone, calendarId } = JSON.parse(decodeURIComponent(state));
+                console.log("Code:", code);
+                console.log("Phone:", phone);
+                console.log("Calendar ID:", calendarId);
+                fetch(CALLBACK_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        phone: phone,
+                        calendar_id: calendarId,
+                        code: code  // Send code instead of token
                     })
-                    .then(response => {
-                        if (!response.ok) throw new Error("Server error: " + response.status);
-                        return response.json();
-                    })
-                    .then(data => {
-                        resultDiv.textContent = "Success! Data sent to server.";
-                        console.log("Server response:", data);
-                    })
-                    .catch(error => {
-                        errorMessage.textContent = "Failed to send data: " + error.message;
-                        console.error("Fetch error:", error);
-                    });
-                } else {
-                    errorMessage.textContent = "OAuth callback failed: missing token or state.";
-                }
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error("Server error: " + response.status);
+                    return response.json();
+                })
+                .then(data => {
+                    resultDiv.textContent = "Success! Data sent to server.";
+                    console.log("Server response:", data);
+                })
+                .catch(error => {
+                    errorMessage.textContent = "Failed to send data: " + error.message;
+                    console.error("Fetch error:", error);
+                });
             }
 
             form.addEventListener("submit", (event) => {
@@ -103,10 +98,10 @@
                 const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
                     `client_id=${CLIENT_ID}&` +
                     `redirect_uri=${encodeURIComponent(REDIRECT_URI)}&` +
-                    `response_type=code&` +
+                    `response_type=code&` +  // Switch to code flow
                     `scope=${encodeURIComponent(SCOPE)}&` +
-                    `state=${encodeURIComponent(JSON.stringify({ phone, calendarId }))}`;
-                
+                    `state=${encodeURIComponent(JSON.stringify({ phone, calendarId }))}&` +
+                    `access_type=offline&prompt=consent`;  // Ensure refresh_token is included
                 console.log("Redirecting to:", authUrl);
                 window.location.href = authUrl;
             });
