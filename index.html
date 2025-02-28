@@ -9,6 +9,9 @@
         button { padding: 8px 16px; cursor: pointer; }
         #error-message { color: red; }
         #result { margin-top: 20px; }
+        footer { margin-top: 40px; font-size: 0.9em; color: #666; }
+        a { color: #1DA1F2; text-decoration: none; }
+        a:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
@@ -21,11 +24,15 @@
     <div id="error-message"></div>
     <div id="result"></div>
 
+    <footer>
+        <p>Follow me on <a href="https://x.com/ArthurDaKingsta" target="_blank">@ArthurDaKingsta</a> for updates</p>
+    </footer>
+
     <script>
         const CLIENT_ID = "511732170444-5av4o2isr0r1r3ktsr6kok5age35pnlb.apps.googleusercontent.com";
         const SCOPE = "https://www.googleapis.com/auth/calendar.events";
         const REDIRECT_URI = window.location.origin; // More precise redirect URI
-        const CALLBACK_URL = "https://8eaf-5-29-244-156.ngrok-free.app/callback";
+        const CALLBACK_URL = "https://httte6cn2fwg6ymku7mdrzyl2q0itfxp.lambda-url.eu-north-1.on.aws/";
 
         document.addEventListener("DOMContentLoaded", () => {
             const form = document.getElementById("oauth-form");
