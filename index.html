@@ -25,10 +25,24 @@
         .instructions p { margin-bottom: 10px; }
         .instructions img { max-width: 100%; margin: 10px 0; border: 1px solid #ddd; }
         .instructions ol { padding-left: 20px; }
+        .privacy-notice {
+            color: red;
+            font-weight: bold;
+            max-width: 600px;
+            margin: 0 auto 20px auto;
+            padding: 15px;
+            border: 2px solid red;
+            border-radius: 5px;
+            background-color: #ffeeee;
+        }
     </style>
 </head>
 <body>
     <h2>WhatsApp Calendar Bot</h2>
+    
+    <div class="privacy-notice">
+        If you're worried about privacy, create a new blank calendar and link it here. We don't access private data as it is in violation with Meta's and Google's privacy policies.
+    </div>
     
     <form id="oauth-form">
         <input type="text" id="phone" placeholder="Phone number with country code (e.g., +1234567890)"><br>

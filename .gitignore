@@ -3,3 +3,4 @@
 /LambdaPackage
 /awsFolder
 lambda.py
+send_message.py
