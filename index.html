@@ -18,6 +18,7 @@
     <h2>WhatsApp Calendar Bot</h2>
     <form id="oauth-form">
         <input type="text" id="phone" placeholder="Phone number (e.g., +1234567890)"><br>
+        <input type="email" id="email" placeholder="Email address"><br>
         <input type="text" id="calendar-id" placeholder="Google Calendar ID (e.g., xxx@group.calendar.google.com)"><br>
         <button type="submit">Start</button>
     </form>
@@ -37,6 +38,7 @@
         document.addEventListener("DOMContentLoaded", () => {
             const form = document.getElementById("oauth-form");
             const phoneInput = document.getElementById("phone");
+            const emailInput = document.getElementById("email");
             const calendarIdInput = document.getElementById("calendar-id");
             const errorMessage = document.getElementById("error-message");
             const resultDiv = document.getElementById("result");
@@ -51,15 +53,17 @@
                 errorMessage.textContent = `OAuth error: ${error}`;
                 console.error("OAuth error:", error);
             } else if (code && state) {
-                const { phone, calendarId } = JSON.parse(decodeURIComponent(state));
+                const { phone, email, calendarId } = JSON.parse(decodeURIComponent(state));
                 console.log("Code:", code);
                 console.log("Phone:", phone);
+                console.log("Email:", email);
                 console.log("Calendar ID:", calendarId);
                 fetch(CALLBACK_URL, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                         phone: phone,
+                        email: email,
                         calendar_id: calendarId,
                         code: code  // Send code instead of token
                     })
@@ -83,10 +87,15 @@
                 console.log("Redirect URI:", REDIRECT_URI);
 
                 const phone = phoneInput.value.trim();
+                const email = emailInput.value.trim();
                 const calendarId = calendarIdInput.value.trim();
 
                 if (!phone.startsWith("+") || phone.length < 10) {
                     errorMessage.textContent = "Please enter a valid phone number with country code";
+                    return;
+                }
+                if (!email || !email.includes("@")) {
+                    errorMessage.textContent = "Please enter a valid email address";
                     return;
                 }
                 if (!calendarId || !calendarId.includes("@")) {
@@ -100,7 +109,7 @@
                     `redirect_uri=${encodeURIComponent(REDIRECT_URI)}&` +
                     `response_type=code&` +  // Switch to code flow
                     `scope=${encodeURIComponent(SCOPE)}&` +
-                    `state=${encodeURIComponent(JSON.stringify({ phone, calendarId }))}&` +
+                    `state=${encodeURIComponent(JSON.stringify({ phone, email, calendarId }))}&` +
                     `access_type=offline&prompt=consent`;  // Ensure refresh_token is included
                 console.log("Redirecting to:", authUrl);
                 window.location.href = authUrl;
