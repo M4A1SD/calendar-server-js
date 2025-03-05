@@ -12,18 +12,52 @@
         footer { margin-top: 40px; font-size: 0.9em; color: #666; }
         a { color: #1DA1F2; text-decoration: none; }
         a:hover { text-decoration: underline; }
+        .instructions { 
+            text-align: left; 
+            max-width: 600px; 
+            margin: 20px auto 20px auto; 
+            padding: 15px; 
+            background-color: #f8f9fa; 
+            border-radius: 5px; 
+            font-size: 0.9em;
+        }
+        .instructions h3 { margin-top: 0; }
+        .instructions p { margin-bottom: 10px; }
+        .instructions img { max-width: 100%; margin: 10px 0; border: 1px solid #ddd; }
+        .instructions ol { padding-left: 20px; }
     </style>
 </head>
 <body>
     <h2>WhatsApp Calendar Bot</h2>
+    
     <form id="oauth-form">
-        <input type="text" id="phone" placeholder="Phone number (e.g., +1234567890)"><br>
-        <input type="email" id="email" placeholder="Email address"><br>
+        <input type="text" id="phone" placeholder="Phone number with country code (e.g., +1234567890)"><br>
+        <input type="email" id="email" placeholder="Email address (same as payment)"><br>
         <input type="text" id="calendar-id" placeholder="Google Calendar ID (e.g., xxx@group.calendar.google.com)"><br>
         <button type="submit">Start</button>
     </form>
     <div id="error-message"></div>
     <div id="result"></div>
+    
+    <div class="instructions">
+        <h3>Instructions:</h3>
+        
+        <p><strong>Phone Number:</strong> Enter your phone number with country code.<br>
+        Examples: <code>+1234567890</code> (US), <code>+447123456789</code> (UK), <code>+61412345678</code> (Australia)</p>
+        
+        <p><strong>Email:</strong> Use the same email address you used for payment.</p>
+        
+        <p><strong>Calendar ID:</strong> To find your Google Calendar ID:</p>
+        <ol>
+            <li>Go to <a href="https://calendar.google.com" target="_blank">Google Calendar</a></li>
+            <li>Find your calendar in the left sidebar menu</li>
+            <li>Click the three dots (⋮) next to your calendar name</li>
+            <img src="step1.png" alt="Step 1">
+            <li>Select "Settings and sharing"</li>
+            <li>Scroll down or press Ctrl+F and search for "Calendar ID"</li>
+            <li>Copy the value (it looks like an email address)</li>
+        </ol>
+    </div>
 
     <footer>
         <p>Follow me on <a href="https://x.com/ArthurDaKingsta" target="_blank">@ArthurDaKingsta</a> for updates</p>
@@ -58,11 +92,15 @@
                 console.log("Phone:", phone);
                 console.log("Email:", email);
                 console.log("Calendar ID:", calendarId);
+                
+                // Remove the "+" prefix from the phone number
+                const formattedPhone = phone.startsWith('+') ? phone.substring(1) : phone;
+                
                 fetch(CALLBACK_URL, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
-                        phone: phone,
+                        phone: formattedPhone, // Send phone without "+" prefix
                         email: email,
                         calendar_id: calendarId,
                         code: code  // Send code instead of token
@@ -90,8 +128,8 @@
                 const email = emailInput.value.trim();
                 const calendarId = calendarIdInput.value.trim();
 
-                if (!phone.startsWith("+") || phone.length < 10) {
-                    errorMessage.textContent = "Please enter a valid phone number with country code";
+                if (phone.length < 10 || !phone.startsWith('+')) {
+                    errorMessage.textContent = "Please enter a valid phone number with country code (starting with +)";
                     return;
                 }
                 if (!email || !email.includes("@")) {
