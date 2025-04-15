@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google-site-verification" content="bNoC7Hn3Qw_wclYy5m4f5ip5bxfcpNKXHl9dFrGNPMs" />
     <title>WhatsApp Calendar Bot</title>
     <style>
@@ -15,20 +16,36 @@
             --success-color: #28a745;
         }
 
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body { 
             font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif; 
-            text-align: center; 
-            margin: 0;
-            padding: 20px;
             color: var(--text-color);
             line-height: 1.6;
             background-color: #f5f8fa;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        .text-center {
+            text-align: center;
         }
 
         h2 {
             color: var(--primary-color);
             margin-bottom: 30px;
             font-size: 2.2em;
+            text-align: center;
         }
 
         h3 {
@@ -38,37 +55,70 @@
             font-size: 1.4em;
         }
 
-        input { 
-            padding: 12px 15px; 
-            margin: 8px 0; 
-            width: 300px; 
+        .form-container {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-hint {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .form-control {
+            display: block;
+            width: 100%;
+            padding: 12px 15px;
             border: 2px solid var(--border-color);
             border-radius: 8px;
             font-size: 1em;
             transition: border-color 0.3s, box-shadow 0.3s;
         }
 
-        input:focus {
+        .form-control:focus {
             outline: none;
             border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(29, 161, 242, 0.1);
         }
 
-        button { 
-            padding: 12px 24px; 
-            cursor: pointer;
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
             background-color: var(--primary-color);
             color: white;
             border: none;
             border-radius: 8px;
             font-size: 1em;
             font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
             transition: background-color 0.3s, transform 0.2s;
         }
 
-        button:hover {
+        .btn:hover {
             background-color: var(--primary-hover);
             transform: translateY(-1px);
+            text-decoration: none;
+        }
+
+        .btn-block {
+            display: block;
+            width: 100%;
         }
 
         #error-message { 
@@ -76,40 +126,20 @@
             margin: 15px 0;
             padding: 10px;
             border-radius: 8px;
-            /* background-color: rgba(220, 53, 69, 0.1); */
+            text-align: center;
         }
 
         #result { 
-            margin-top: 20px;
+            margin: 20px 0;
             padding: 15px;
             border-radius: 8px;
-            /* background-color: rgba(40, 167, 69, 0.1); */
             color: var(--success-color);
-        }
-
-        footer { 
-            margin-top: 50px; 
-            font-size: 0.9em; 
-            color: #666;
-            padding: 20px 0;
-            border-top: 1px solid var(--border-color);
-        }
-
-        a { 
-            color: var(--primary-color); 
-            text-decoration: none; 
-            transition: color 0.3s;
-        }
-
-        a:hover { 
-            text-decoration: underline; 
-            color: var(--primary-hover);
+            text-align: center;
         }
 
         .instructions { 
-            text-align: left; 
-            max-width: 700px; 
-            margin: 30px auto; 
+            text-align: left;
+            margin: 30px 0; 
             padding: 25px; 
             background-color: white; 
             border-radius: 12px; 
@@ -123,6 +153,7 @@
 
         .instructions img { 
             max-width: 100%; 
+            height: auto;
             margin: 15px 0; 
             border: 1px solid var(--border-color);
             border-radius: 8px;
@@ -137,124 +168,128 @@
             margin-bottom: 10px;
         }
 
-
-        .terms-button {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 12px 24px;
-            background-color: var(--primary-color);
-            color: white;
-            text-decoration: none;
-            border-radius: 8px;
-            font-weight: 600;
-            transition: background-color 0.3s, transform 0.2s;
+        .footer {
+            margin-top: 50px;
+            padding: 20px 0;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
         }
 
-        .terms-button:hover {
-            /* background-color: var(--primary-hover); */
-            transform: translateY(-1px);
-            text-decoration: none;
+        .footer p {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        a { 
+            color: var(--primary-color); 
+            text-decoration: none; 
+            transition: color 0.3s;
+        }
+
+        a:hover { 
+            text-decoration: underline; 
+            color: var(--primary-hover);
         }
 
         .footer-links {
-            margin-top: 25px;
             display: flex;
-            justify-content: center;
-            gap: 20px;
             flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
         }
 
-        .footer-links .terms-button {
-            margin-top: 0;
-        }
-
-        @media (max-width: 768px) {
-            body {
-                padding: 15px;
-            }
-
-            input {
-                width: 100%;
-                max-width: 300px;
-            }
-
-            .instructions {
-                margin: 20px 10px;
-                padding: 20px;
-            }
-
+        @media (max-width: 576px) {
             .footer-links {
                 flex-direction: column;
                 gap: 10px;
             }
 
-            .footer-links .terms-button {
+            .btn {
                 width: 100%;
-                max-width: 300px;
-                margin: 0 auto;
+            }
+
+            .container {
+                padding: 0 10px;
+            }
+
+            h2 {
+                font-size: 1.8em;
+            }
+
+            .form-container, .instructions {
+                padding: 15px;
             }
         }
     </style>
 </head>
 <body>
-    <h2>WhatsApp Calendar Bot</h2>
-    
-
-    
-    <form id="oauth-form">
-        <input type="text" id="phone" placeholder="Phone number with country code (e.g., +1234567890)"><br>
-        <input type="email" id="email" placeholder="Email address (same as payment)"><br>
-        <input type="text" id="calendar-id" placeholder="Google Calendar ID (e.g., xxx@group.calendar.google.com)"><br>
-        <button type="submit">Start</button>
-    </form>
-    <div id="error-message"></div>
-    <div id="result"></div>
-
-    
-    <div class="instructions">
-        <h3>About WhatsApp Calendar Bot</h3>
-        <p>R2R Calendar Bot is a service that allows to create Google calendar events through WhatsApp messages</p>
-
-
-
-        <h3>Data Usage & Privacy</h3>
-        <p>We request access to your Google Calendar to create new events based on your WhatsApp messages</p>
+    <div class="container">
+        <h2>WhatsApp Calendar Bot</h2>
         
-            
-        
-        <p>We do not store your calendar data. All data processing is done in real-time and we only access the minimum required data to provide our service.</p>
-        <a href="https://terms-privacy.r2r.site" target="_blank" class="terms-button">Terms of Service & Privacy Policy</a>
-
-    </div>
-    <div class="instructions">
-        <h3>Instructions:</h3>
-        
-        <p><strong>Phone Number:</strong> Enter your phone number with country code.<br>
-        Examples: <code>+1234567890</code> (US), <code>+447123456789</code> (UK), <code>+61412345678</code> (Australia)</p>
-        
-        <p><strong>Email:</strong> Use the same email address you used for payment.</p>
-        
-        <p><strong>Calendar ID:</strong> To find your Google Calendar ID:</p>
-        <ol>
-            <li>Go to <a href="https://calendar.google.com" target="_blank">Google Calendar</a></li>
-            <li>Find your calendar in the left sidebar menu</li>
-            <li>Click the three dots (⋮) next to your calendar name</li>
-            <img src="step1.png" alt="Step 1">
-            <li>Select "Settings and sharing"</li>
-            <li>Scroll down or press Ctrl+F and search for "Calendar ID"</li>
-            <li>Copy the value (it looks like an email address) </li>
-        </ol>
-    </div>
-
-    <footer>
-        <p>© 2024 WhatsApp Calendar Bot. All rights reserved.</p>
-        <p>Follow us on <a href="https://x.com/ArthurDaKingsta" target="_blank">@ArthurDaKingsta</a> for updates</p>
-        <div class="footer-links">
-            <a href="https://terms-privacy.r2r.site" target="_blank" class="terms-button">Terms of Service & Privacy Policy</a>
-            <a href="https://start.r2r.site" target="_blank" class="terms-button">Homepage</a>
-            <a href="https://r2r.site" target="_blank" class="terms-button">Store Page</a>
+        <div class="form-container">
+            <form id="oauth-form">
+                <div class="form-group">
+                    <label for="phone" class="form-label">Phone Number with Country Code</label>
+                    <input type="text" id="phone" class="form-control" placeholder="+972501234567">
+                    <p class="form-hint">(e.g., <strong>+972</strong>501234567) Don't include first zero</p>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email" class="form-label">Email Address</label>
+                    <input type="email" id="email" class="form-control" placeholder="your@email.com">
+                    <p class="form-hint">Should match the email you used to purchase the bot at <a href="https://r2r.site" target="_blank">r2r.site</a></p>
+                    <p class="form-hint">However, currently the bot is free.</p>
+                </div>
+                
+                <div class="form-group">
+                    <label for="calendar-id" class="form-label">Google Calendar ID</label>
+                    <input type="text" id="calendar-id" class="form-control" placeholder="xxx@group.calendar.google.com">
+                    <p class="form-hint">See instructions below for how to find your Calendar ID</p>
+                </div>
+                
+                <button type="submit" class="btn btn-block">Complete Registration</button>
+            </form>
+            <div id="error-message"></div>
+            <div id="result"></div>
         </div>
-    </footer>
+
+        <div class="instructions">
+            <h3>How to get Google Calendar ID instructions:</h3>
+            <ol>
+                <li>Go to <a href="https://calendar.google.com" target="_blank">Google Calendar</a>. If on mobile, select desktop view</li>
+                <li>Find your calendar in the left sidebar menu</li>
+                <li>Click the three dots (⋮) next to your calendar name</li>
+                <img src="step1.png" alt="Step 1">
+                <li>Select "Settings and sharing"</li>
+                <li>Scroll down or press Ctrl+F and search for "Calendar ID"</li>
+                <li>Copy the value (it looks like an email address) </li>
+            </ol>
+        </div>
+
+        <div class="instructions">
+            <h3>About WhatsApp Calendar Bot</h3>
+            <p>R2R Calendar Bot is a service that allows to create Google calendar events through WhatsApp messages</p>
+
+            <h3>Data Usage & Privacy</h3>
+            <p>We request access to your Google Calendar to create new events based on your WhatsApp messages</p>
+            <p>We do not store your calendar data. All data processing is done in real-time and we only access the minimum required data to provide our service.</p>
+            <div class="text-center">
+                <a href="https://terms-privacy.r2r.site" target="_blank" class="btn">Terms of Service & Privacy Policy</a>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <p>© 2024 WhatsApp Calendar Bot. All rights reserved.</p>
+            <p>Follow us on <a href="https://x.com/ArthurDaKingsta" target="_blank">@ArthurDaKingsta</a> for updates</p>
+            <div class="footer-links">
+                <a href="https://terms-privacy.r2r.site" target="_blank" class="btn">Terms of Service & Privacy Policy</a>
+                <a href="https://start.r2r.site" target="_blank" class="btn">Homepage</a>
+                <a href="https://r2r.site" target="_blank" class="btn">Store Page</a>
+            </div>
+        </footer>
+    </div>
 
     <script>
         const CLIENT_ID = "511732170444-5av4o2isr0r1r3ktsr6kok5age35pnlb.apps.googleusercontent.com";
@@ -305,8 +340,11 @@
                 .then(response => {
                     // When using no-cors, we can't read the response details
                     // So we'll assume success if we get here
-                    resultDiv.textContent = "Success! Your calendar is now connected.";
+                    resultDiv.innerHTML = "Success! Your calendar is now connected. Start messaging <a href='https://wa.me/972552729212' target='_blank' style='color: var(--primary-color); font-weight: bold; text-decoration: underline;'>WhatsApp</a>";
                     resultDiv.style.color = "var(--success-color)";
+                    resultDiv.style.padding = "15px";
+                    resultDiv.style.borderRadius = "5px";
+                    resultDiv.style.backgroundColor = "rgba(0, 128, 0, 0.1)";
                     errorMessage.textContent = "";
                 })
                 .catch(error => {
